@@ -5,6 +5,8 @@ const RSSParser = require('rss-parser');
 const ffmpeg = require('fluent-ffmpeg');
 const nodeHtmlToImage = require('node-html-to-image');
 
+const TAGS = 'podcast,podcastenespañol,videojuegos,videojuegosretro,arcade,nostalgia,80s';
+
 const SLATE_TEMPLATE = './templates/slate.html';
 const THUMBNAIL_TEMPLATE = './templates/thumbnail.html';
 const FFMPEG_PATH = './bin/ffmpeg';
@@ -31,6 +33,12 @@ const EPISODE = args[1];
 
   mkdirp.sync(outputDir);
 
+  // generar textos
+  
+  fs.writeFileSync(`${outputDir}/title.txt`, item.title);
+  fs.writeFileSync(`${outputDir}/tags.txt`, TAGS);
+  fs.writeFileSync(`${outputDir}/description.txt`, item.contentSnippet);
+
   // generar thumbnail
 
   const thumbnailHTML = fs.readFileSync(THUMBNAIL_TEMPLATE, 'utf8')
@@ -53,7 +61,7 @@ const EPISODE = args[1];
   // generar slate
 
   const slateHTML = fs.readFileSync(SLATE_TEMPLATE, 'utf8')
-  const slatePath = `${outputDir}/slate.png`;
+  const slatePath = `${outputDir}/slate.jpg`;
   await nodeHtmlToImage({
     output: slatePath,
     html: slateHTML,
@@ -69,15 +77,10 @@ const EPISODE = args[1];
     },
   });
 
-  // generar descripción
-  fs.writeFileSync(`${outputDir}/description.txt`, item.title + "\n\n" + item.contentSnippet);
-
   // generar video
 
-  let slateGen = ffmpeg();
-
   let slateGenDone = await new Promise((res, rej) => {
-    slateGen
+    ffmpeg()
       .setFfmpegPath(FFMPEG_PATH)
       .input(slatePath).loop()
       .videoCodec('libx264')
@@ -92,15 +95,19 @@ const EPISODE = args[1];
       })
   })
 
-  var videoGen = ffmpeg();
+  let videoGenDone = await new Promise((res, rej) => {
 
-  videoGen
-    .setFfmpegPath(FFMPEG_PATH)
-    .input(item.enclosure.url)
-    .input(`${outputDir}/slate.mp4`)
-    .videoCodec('copy')
-    .audioCodec('copy')
-    .save(`${outputDir}/video.mp4`);
+    ffmpeg()
+      .setFfmpegPath(FFMPEG_PATH)
+      .input(item.enclosure.url)
+      .input(`${outputDir}/slate.mp4`)
+      .videoCodec('copy')
+      .audioCodec('copy')
+      .save(`${outputDir}/video.mp4`);
 
+  })
+
+  fs.unlinkSync(slatePath);
+  fs.unlinkSync(`${outputDir}/slate.mp4`);
 
 })();
