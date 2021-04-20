@@ -72,7 +72,7 @@ const EPISODE = args[1];
   });
 
   // generar descripción
-  fs.writeFileSync(`${outputDir}/description.txt`, item.contentSnippet + "\n\n" + item.contentSnippet);
+  fs.writeFileSync(`${outputDir}/description.txt`, item.title + "\n\n" + item.contentSnippet);
 
   // generar video
 
