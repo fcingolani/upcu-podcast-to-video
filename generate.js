@@ -27,8 +27,6 @@ const EPISODE = args[1];
     return;
   }
 
-  item.itunes.episode--; // porque somos ezpezialez
-
   let outputDir = `./out/${now} - ${item.title}`;
 
   mkdirp.sync(outputDir);
