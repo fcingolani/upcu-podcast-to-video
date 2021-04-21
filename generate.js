@@ -9,7 +9,7 @@ const TAGS = 'podcast,podcastenespañol,videojuegos,videojuegosretro,arcade,nost
 
 const SLATE_TEMPLATE = './templates/slate.html';
 const THUMBNAIL_TEMPLATE = './templates/thumbnail.html';
-const FFMPEG_PATH = './bin/ffmpeg';
+const FFMPEG_PATH = './bin/ffmpeg.exe';
 
 const args = process.argv.slice(2)
 
@@ -24,7 +24,7 @@ const EPISODE = args[1];
   let feed = await parser.parseURL(RSS_URL);
 
   let item = feed.items.find(i => i.itunes.episode == EPISODE);
-
+  
   if (!item) {
     return;
   }
@@ -42,7 +42,7 @@ const EPISODE = args[1];
   // generar thumbnail
 
   const thumbnailHTML = fs.readFileSync(THUMBNAIL_TEMPLATE, 'utf8')
-  const thumbnailPath = `${outputDir}/thumbnail.png`;
+  const thumbnailPath = `${outputDir}/thumbnail.jpg`;
   await nodeHtmlToImage({
     output: thumbnailPath,
     html: thumbnailHTML,
@@ -100,9 +100,10 @@ const EPISODE = args[1];
     ffmpeg()
       .setFfmpegPath(FFMPEG_PATH)
       .input(item.enclosure.url)
-      .input(`${outputDir}/slate.mp4`)
+      .input(`${outputDir}/slate.mp4`).inputOptions('-stream_loop -1')
       .videoCodec('copy')
       .audioCodec('copy')
+      .outputOptions('-shortest')
       .save(`${outputDir}/video.mp4`);
 
   })
