@@ -1,4 +1,5 @@
 const fs = require('fs');
+const os = require('os')
 
 const mkdirp = require('mkdirp');
 const RSSParser = require('rss-parser');
@@ -9,7 +10,7 @@ const TAGS = 'podcast,podcastenespañol,videojuegos,videojuegosretro,arcade,nost
 
 const SLATE_TEMPLATE = './templates/slate.html';
 const THUMBNAIL_TEMPLATE = './templates/thumbnail.html';
-const FFMPEG_PATH = './bin/ffmpeg.exe';
+const FFMPEG_PATH = `./bin/ffmpeg${os.type() === 'Windows_NT' ? '.exe' : ''}`;
 
 const args = process.argv.slice(2)
 
