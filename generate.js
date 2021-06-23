@@ -38,7 +38,7 @@ const EPISODE = args[1];
   
   fs.writeFileSync(`${outputDir}/title.txt`, item.title);
   fs.writeFileSync(`${outputDir}/tags.txt`, TAGS);
-  fs.writeFileSync(`${outputDir}/description.txt`, item.contentSnippet);
+  fs.writeFileSync(`${outputDir}/description.txt`, item.contentSnippet + "\n\n\n#UnPodcastComoUno");
 
   // generar thumbnail
 
